@@ -1,0 +1,109 @@
+/*
+ * Click `Run` to execute the snippet below!
+ */
+
+import java.io.*;
+import java.util.*;
+
+/*
+ * To execute Java, please define "static void main" on a class
+ * named Solution.
+ * 192.05.1.0
+ * If you need more classes, simply define them inline.
+ */
+
+class Solution {
+  public static void main(String[] args) {
+    ArrayList<String> strings = new ArrayList<String>();
+    strings.add("Hello, World!");
+    strings.add("Welcome to CoderPad.");
+    strings.add("This pad is running Java " + Runtime.version().feature());
+
+    for (String string : strings) {
+      System.out.println(string);
+    }
+  }
+
+  public String isValidIpAddress(String ipAddress) { 
+    /*  "192.168.1.1"
+        "...." 
+        "-1.-1.-1.-1"
+        "..."
+        "192.168.1"
+        "hello"
+        ""
+        "1"
+        "192.168.1.1"
+        "192.168.1.1.192.168.1.1"
+    */
+    if (isValidIpV4(ipAddress)) {
+      return "Valid IPV4";
+    }
+    if (isValidIpV6(ipAddress)) {
+      return "Valid IPV6";
+    }
+    return "Not Valid";
+  }
+
+  public boolean isValidIpV4(String ipAddress) {
+    String[] segments = ipAddress.split(".");
+    if (segments.length == 4) {
+      for (String segment : segments) {
+        //validate each segment
+        if (!isValidIpV4Segment(segment)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  public boolean isValidIpV4Segment(String segment) { //"-1", "", "05", "256", "192", "025", "0255"
+    try {
+      Integer integer = Integer.parseInt(segment); // "-1" 
+      if (integer > 255 || integer < 0) {
+        return false;
+      }
+
+      boolean isLeadingZeroSegment = segment.startsWith("0");
+      if (isLeadingZeroSegment && integer != 0) {
+        return false;
+      }
+
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  public boolean isValidIpV6(String ipAddress) {
+    String[] segments = ipAddress.split(".");
+    if (segments.length == 8) {
+      for (String segment : segments) {
+        //validate each segment
+        boolean isValidSegment = isValidIpV6Segment(segment);
+        if (!isValidSegment) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  public boolean isValidIpV6Segment(String segment) {
+    if (segment.length() != 4) {
+      return false;
+    }
+
+  }
+
+}
+
+//2001:adb8:1234:1234:1233:f350:2256:f3dd
+//8x 4 char, 0-9,a-f, lowercase
+
+//string in
+//valid "valid ipv4" / ipv6 / "not valid"
+
+//test cases
+//error / edge
