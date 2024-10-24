@@ -1,109 +1,92 @@
-/*
- * Click `Run` to execute the snippet below!
- */
-
-import java.io.*;
-import java.util.*;
-
-/*
- * To execute Java, please define "static void main" on a class
- * named Solution.
- * 192.05.1.0
- * If you need more classes, simply define them inline.
- */
+//Time: 24:14.99
 
 class Solution {
-  public static void main(String[] args) {
-    ArrayList<String> strings = new ArrayList<String>();
-    strings.add("Hello, World!");
-    strings.add("Welcome to CoderPad.");
-    strings.add("This pad is running Java " + Runtime.version().feature());
-
-    for (String string : strings) {
-      System.out.println(string);
-    }
-  }
-
-  public String isValidIpAddress(String ipAddress) { 
-    /*  "192.168.1.1"
-        "...." 
-        "-1.-1.-1.-1"
-        "..."
-        "192.168.1"
-        "hello"
-        ""
-        "1"
-        "192.168.1.1"
-        "192.168.1.1.192.168.1.1"
-    */
-    if (isValidIpV4(ipAddress)) {
-      return "Valid IPV4";
-    }
-    if (isValidIpV6(ipAddress)) {
-      return "Valid IPV6";
-    }
-    return "Not Valid";
-  }
-
-  public boolean isValidIpV4(String ipAddress) {
-    String[] segments = ipAddress.split(".");
-    if (segments.length == 4) {
-      for (String segment : segments) {
-        //validate each segment
-        if (!isValidIpV4Segment(segment)) {
-          return false;
+    public String validIPAddress(String queryIP) {
+        if (isValid4(queryIP)) {
+            return "IPv4";
         }
-      }
-    }
-    return true;
-  }
 
-  public boolean isValidIpV4Segment(String segment) { //"-1", "", "05", "256", "192", "025", "0255"
-    try {
-      Integer integer = Integer.parseInt(segment); // "-1" 
-      if (integer > 255 || integer < 0) {
-        return false;
-      }
-
-      boolean isLeadingZeroSegment = segment.startsWith("0");
-      if (isLeadingZeroSegment && integer != 0) {
-        return false;
-      }
-
-      return true;
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  public boolean isValidIpV6(String ipAddress) {
-    String[] segments = ipAddress.split(".");
-    if (segments.length == 8) {
-      for (String segment : segments) {
-        //validate each segment
-        boolean isValidSegment = isValidIpV6Segment(segment);
-        if (!isValidSegment) {
-          return false;
+        if (isValid6(queryIP)) {
+            return "IPv6";
         }
-      }
-    }
-    return true;
-  }
 
-  public boolean isValidIpV6Segment(String segment) {
-    if (segment.length() != 4) {
-      return false;
+        return "Neither";
     }
 
-  }
+    public boolean isValid4(String queryIP) {
+        if (queryIP.startsWith(".") || queryIP.endsWith(".")) {
+            return false;
+        }
+
+        String[] segments = queryIP.split("[.]"); //mistake: "." is regex, needed to use "[.]"
+        if (segments.length != 4) {
+            return false;
+        }
+
+        for (String segment : segments) {
+            if (!isValid4Segment(segment)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isValid4Segment(String segment) {
+        try {
+            Integer integer = Integer.parseInt(segment);
+            if (integer > 255 || integer < 0) {
+                return false;
+            }
+
+            if (segment.startsWith("0") && segment.length() > 1) {
+                return false;
+            }
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isValid6(String queryIP) {
+        if (queryIP.startsWith(":") || queryIP.endsWith(":")) {
+            return false;
+        }
+
+        String[] segments = queryIP.split("[:]"); //mistake: "." is regex, needed to use "[.]"
+        if (segments.length != 8) {
+            return false;
+        }
+
+        for (String segment : segments) {
+            if (!isValid6Segment(segment)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isValid6Segment(String segment) {
+        if (segment.length() > 4 || segment.length() == 0) {
+            return false;
+        }
+
+        for (char c : segment.toCharArray()) {
+            if (Character.digit(c,16) == -1) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }
 
-//2001:adb8:1234:1234:1233:f350:2256:f3dd
-//8x 4 char, 0-9,a-f, lowercase
+//mitake: "2001:0db8:85a3:0:0:8A2E:0370:7334:" need to account for leading and trailing "." & ":", assimed they would return "" with split
 
-//string in
-//valid "valid ipv4" / ipv6 / "not valid"
+//mistake: "00.0.0.0" need to account for when starts with zero, is zero, and still is wrong, replaced starts with zero & not zero with starts with zero and length > 1
 
-//test cases
-//error / edge
+//mistake: "2001:0db8:85a3:00000:0:8A2E:0370:7334" overlooked segment length
+
+//mistake: "2001:db8:85a3:0::8a2E:0370:7334" overlooked segment length minimum
